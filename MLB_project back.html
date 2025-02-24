@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MLB Demo Asynch</title>
+    <link rel="stylesheet" href="styles.css">
+    <script>
+        const ISOK = 200;
+        var gamesList = [];
+        var i = 0;
+        
+        var request = new XMLHttpRequest();
+
+        function nextGameDate() {
+            
+            if (gamesList.length === 0) {
+                console.error("No games available.");
+                return;
+            } else {
+                i++
+                let lastGame = gamesList[i]; // Get last game without removing it
+                let homeTeam = lastGame.teams.home.team.name;
+                let awayTeam = lastGame.teams.away.team.name
+                document.getElementById("txtBox1").value = homeTeam; 
+                document.getElementById("txtBox2").value = awayTeam; 
+            }
+        }
+
+        function previousGameDate() {
+            
+            if (gamesList.length === 0) {
+                console.error("No games available.");
+                return;
+            } else {
+                i--
+                let lastGame = gamesList[i]; // Get last game without removing it
+                let homeTeam = lastGame.teams.home.team.name;
+                let awayTeam = lastGame.teams.away.team.name
+                document.getElementById("txtBox1").value = homeTeam;
+                document.getElementById("txtBox2").value = awayTeam; 
+
+            }
+        }
+        
+        function getDataAsynch() {
+            // Get the date input value
+            const dateControl = document.getElementById("start").value;
+
+            // Search for game of the selected day
+            var seasonURL = `https://statsapi.mlb.com/api/v1/schedule/games/?sportId=1&startDate=${dateControl}&endDate=${dateControl}`;
+            
+            // Send to process the http request
+           // getJSONAsync(seasonURL);
+           request.onload = function() {
+            if (request.status === ISOK) {
+                        
+                var jsObject = JSON.parse(request.responseText);
+                gamesList = jsObject.dates[0].games;
+             
+                var prop = jsObject.dates[0].games[0].teams.home.team.name; // single game URL
+                var gamePk = jsObject.dates[0].games[0].gamePk;
+                var homeTeam = jsObject.dates[0].games;
+                var awayTeam = jsObject.dates[0].games[0].teams.away.team.name;
+             
+                var gameURL = "https://statsapi.mlb.com/api/v1/game/[gamePk]/content";
+                
+                gameURL = gameURL.replace("[gamePk]", gamePk);
+
+                var newJSON = JSON.stringify(jsObject);
+               
+            }
+        };
+        request.open("GET", seasonURL, true);
+        request.send();
+
+    }
+
+    </script>
+</head>
+<body>
+    <label for="start">Insert Date</label>
+    <input type="date" id="start" name="trip-start" value="2023-05-19" min="2020-01-01" max="2025-12-31" />
+    <input type="button" id="btnAsynch" value="Get Baseball Data Asynchronously" onclick="getDataAsynch();" />
+    <br /><br />
+    <label for="start">Home Team  </label><input type="text" id="txtBox1" class="TxtBox" style="width:300px" value="" />
+	<br /><br />
+    <label for="start">Away Team  </label><input type="text" id="txtBox2" class="TxtBox" style="width:300px" value="" />
+    <br /><br />
+    <input type="button" id="btnntxGameAsynch" value="Next Game" onclick="nextGameDate();" />
+    <input type="button" id="btnntxGameAsynch" value="Previous Game" onclick="previousGameDate();" />
+    <br /><br />
+    <label for="start">Highlights</label>
+    <br /><br />
+    <input type="text" id="txtBox1" class="TxtBox" style="width:300px" value="" />
+    <br /><br />
+    <input type="button" id="btnntxHighlight" value="Next" onclick="nextHighlight();" />
+    <input type="button" id="btnprsHighlight" value="Previous" onclick="previousHighlight();" />
+    <input type="button" id="btnplayHighlight" value="Play" onclick="playHighlight();" />
+</body>
+</html>
