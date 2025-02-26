@@ -73,7 +73,7 @@
                 return;
             } 
             if (i < gamesList.length) {
-                w++
+                i++
                 let lastGame = gamesList[i]; // Get last game without removing it
                 let homeTeam = lastGame.teams.home.team.name;
                 let awayTeam = lastGame.teams.away.team.name
@@ -85,8 +85,8 @@
                 gameURL = gameURL.replace("[gamePk]", gamePk);
                 getGames(gamePk, gameURL);
 
-                document.getElementById("txtBox1").value = w; 
-                document.getElementById("txtBox2").value = gameURL;
+                document.getElementById("txtBox1").value = homeTeam; 
+                document.getElementById("txtBox2").value = awayTeam;
 
 
             } else {
@@ -105,8 +105,24 @@
                 let lastGame = gamesList[i]; // Get last game without removing it
                 let homeTeam = lastGame.teams.home.team.name;
                 let awayTeam = lastGame.teams.away.team.name
-                document.getElementById("txtBox1").value = homeTeam;
+                document.getElementById("txtBox1").value = homeTeam; 
                 document.getElementById("txtBox2").value = awayTeam; 
+
+                let gamePk = gamesList[i].gamePk;
+                let gameURL = "https://statsapi.mlb.com/api/v1/game/[gamePk]/content";
+                gameURL = gameURL.replace("[gamePk]", gamePk);
+                getGames(gamePk, gameURL);
+
+                document.getElementById("txtBox1").value = homeTeam; 
+                document.getElementById("txtBox2").value = awayTeam;
+               
+               
+               // i--
+               // let lastGame = gamesList[i]; // Get last game without removing it
+               // let homeTeam = lastGame.teams.home.team.name;
+                //let awayTeam = lastGame.teams.away.team.name
+               // document.getElementById("txtBox1").value = homeTeam;
+               // document.getElementById("txtBox2").value = awayTeam; 
 
             } else {
                 console.log('This is the first game, press Next to continue')
