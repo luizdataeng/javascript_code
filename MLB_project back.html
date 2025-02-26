@@ -19,8 +19,13 @@
 
         var request = new XMLHttpRequest();
 
+        function playHighlight() {
+
+            window.open("https://mlb-cuts-diamond.mlb.com/FORGE/2023/2023-05/19/de67a16a-ff315287-182e86e9-csvm-diamondx64-asset_1280x720_59_4000K.mp4", '_blank').focus();
+        }
+
         function nextHighlight() {
-            //getHighlights();
+           
             if (highlightList.length === 0) {
                 console.error("No highlights available.");
                 return;
@@ -38,19 +43,19 @@
         }
 
         function previousHighlight() {
-            //getHighlights();
-            
-            if (i > 0) {
+            if (highlightList.length === 0) {
+                console.error("No highlights available.");
+                return;
+            }
+
+            if (w > 0) {
+                w--;
                 let highGames = highlightList[w];
                 let next = highGames.description;
                 document.getElementById("txtArea").value = next;
-                w--;
 
-           // if (highlightList.length === 0) {
-            //    console.error("No games available.");
-             //   return;
             } else {
-                w--
+                w--;
                 let highGames = highlightList[i];
                 let next = highGames.description;
                 document.getElementById("txtArea").value = next;
