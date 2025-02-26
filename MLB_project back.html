@@ -20,42 +20,35 @@
         var request = new XMLHttpRequest();
 
         function nextHighlight() {
-            getHighlights();
-          //  if (highlightList.length === 0) {
-               // console.error("No highlights available.");
-            //    return;
-           // }
+            //getHighlights();
+            if (highlightList.length === 0) {
+                console.error("No highlights available.");
+                return;
+            }
 
-            if (i < highlightList.length) {
+            if (w < highlightList.length){
+                w++;
                 let highGames = highlightList[w];
                 let next = highGames.description;
                 document.getElementById("txtArea").value = next;
-                w++;
+                
             } else {
                 console.log('This is the last highlight, press Previous to continue');
             }
         }
 
-       // function nextHighlight() {
-            
-       //     document.getElementById("txtArea").value = highlightList;
-         //   if (highlightList.length === 0) {
-          //      console.error("No games available.");
-         //       return;
-         //   } else {
-         //       w++
-         //       let highGames = highlightList[i];
-         //       let next = highGames.description;
-         //       document.getElementById("txtArea").value = next;
-
-          //  }
-       // }
-
         function previousHighlight() {
-            document.getElementById("txtArea").value = 'hello';
-            if (highlightList.length === 0) {
-                console.error("No games available.");
-                return;
+            //getHighlights();
+            
+            if (i > 0) {
+                let highGames = highlightList[w];
+                let next = highGames.description;
+                document.getElementById("txtArea").value = next;
+                w--;
+
+           // if (highlightList.length === 0) {
+            //    console.error("No games available.");
+             //   return;
             } else {
                 w--
                 let highGames = highlightList[i];
@@ -137,7 +130,7 @@
             requestGame.onload = function () {
                 if (requestGame.status === ISOK) {
                     var jsObject_1 = JSON.parse(requestGame.responseText);
-                    highlightList = jsObject_1.highlights.highlights.items; // Store highlights
+                    var highlightList = jsObject_1.highlights.highlights.items; // Store highlights
                     w = 0; // Reset highlight index
                     if (highlightList && highlightList.length > 0) {
                       document.getElementById("txtArea").value = highlightList[0].description;
@@ -174,7 +167,7 @@
                     
                     var jsObject_1 = JSON.parse(requestHigh.responseText);
         
-                    var highlightList = jsObject_1.highlights.highlights.items;
+                    highlightList = jsObject_1.highlights.highlights.items;
                     //let highGames = highlightList[0];
                     //let next = highGames.description;
         
