@@ -10,34 +10,54 @@
     <title>MLB Demo Asynch</title>
     <link rel="stylesheet" href="styles.css">
     <script>
+
         const ISOK = 200;
         var gamesList = [];
         var i = 0;
-        
+        var w = 0;
+        var highlightList = []; // Initialize highlightList
+
         var request = new XMLHttpRequest();
-        
-        
+
         function nextHighlight() {
-            
-            if (highlightList.length === 0) {
-                console.error("No games available.");
-                return;
-            } else {
-                i++
-                let highGames = highlightList[i];
+            getHighlights();
+          //  if (highlightList.length === 0) {
+               // console.error("No highlights available.");
+            //    return;
+           // }
+
+            if (i < highlightList.length) {
+                let highGames = highlightList[w];
                 let next = highGames.description;
                 document.getElementById("txtArea").value = next;
-
+                w++;
+            } else {
+                console.log('This is the last highlight, press Previous to continue');
             }
         }
 
-        function previousHighlight() {
+       // function nextHighlight() {
             
+       //     document.getElementById("txtArea").value = highlightList;
+         //   if (highlightList.length === 0) {
+          //      console.error("No games available.");
+         //       return;
+         //   } else {
+         //       w++
+         //       let highGames = highlightList[i];
+         //       let next = highGames.description;
+         //       document.getElementById("txtArea").value = next;
+
+          //  }
+       // }
+
+        function previousHighlight() {
+            document.getElementById("txtArea").value = 'hello';
             if (highlightList.length === 0) {
                 console.error("No games available.");
                 return;
             } else {
-                i--
+                w--
                 let highGames = highlightList[i];
                 let next = highGames.description;
                 document.getElementById("txtArea").value = next;
@@ -53,12 +73,22 @@
                 return;
             } 
             if (i < gamesList.length) {
-                i++
+                w++
                 let lastGame = gamesList[i]; // Get last game without removing it
                 let homeTeam = lastGame.teams.home.team.name;
                 let awayTeam = lastGame.teams.away.team.name
                 document.getElementById("txtBox1").value = homeTeam; 
                 document.getElementById("txtBox2").value = awayTeam; 
+
+                let gamePk = gamesList[i].gamePk;
+                let gameURL = "https://statsapi.mlb.com/api/v1/game/[gamePk]/content";
+                gameURL = gameURL.replace("[gamePk]", gamePk);
+                getGames(gamePk, gameURL);
+
+                document.getElementById("txtBox1").value = w; 
+                document.getElementById("txtBox2").value = gameURL;
+
+
             } else {
                 console.log('This is the last game, press Previous to continue')
             }
@@ -84,25 +114,39 @@
             }
         };
 
-        function getGames(gamePk) {
+        function getGames(gamePk, gameURL) {
+
             var requestGame = new XMLHttpRequest();
-        
+
             requestGame.onload = function () {
-                        
-                if (requestHigh.status === ISOK) {
-                    
+                if (requestGame.status === ISOK) {
                     var jsObject_1 = JSON.parse(requestGame.responseText);
-        
-                    var highlightList = jsObject_1.highlights.highlights.items;
-                    //let highGames = highlightList[0];
-                    //let next = highGames.description;
-        
-                    //document.getElementById("txtArea").value = next;
+                    highlightList = jsObject_1.highlights.highlights.items; // Store highlights
+                    w = 0; // Reset highlight index
+                    if (highlightList && highlightList.length > 0) {
+                      document.getElementById("txtArea").value = highlightList[0].description;
+                    } else {
+                      document.getElementById("txtArea").value = "No Highlights Available";
+                    }
                 }
             };
-            requestHigh.open("GET", gameURL, true);
-            requestHigh.send();
-        } 
+            requestGame.open("GET", gameURL, true);
+            requestGame.send();
+        }
+          //  var requestGame = new XMLHttpRequest();
+        
+           // requestGame.onload = function () {
+                        
+            //    if (requestGame.status === ISOK) {
+                    
+            //        var jsObject_1 = JSON.parse(requestGame.responseText);
+        
+            //        var highlightList = jsObject_1.highlights.highlights.items;    
+            //    }
+           // };
+           // requestGame.open("GET", gameURL, true);
+          //  requestGame.send();
+       // } 
 
         function getHighlights(gameURL) {
             var requestHigh = new XMLHttpRequest();
@@ -156,7 +200,7 @@
 
                 getHighlights(gameURL);
 
-                //getGames(gamePk);
+                getGames(gamePk, gameURL);
 
                 var newJSON = JSON.stringify(jsObject);
             }

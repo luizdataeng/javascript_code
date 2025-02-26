@@ -1,0 +1,188 @@
+<!DOCTYPE html >
+<html lang = "en" >
+<head >
+<meta charset = "UTF-8" >
+<meta name = "viewport" content = "width=device-width, initial-scale=1.0" >
+<title > MLB Demo Asynch < /title >
+<link rel = "stylesheet" href = "styles.css" >
+<script >
+const ISOK = 200
+var gamesList = []
+var i = 0
+var w = 0
+var highlightList = []
+// Initialize highlightList
+
+var request = new XMLHttpRequest()
+
+function nextHighlight() {
+    if (highlightList.length === 0) {
+        console.error("No highlights available.")
+        return
+    }
+
+    if (w < highlightList.length) {
+        let highGames = highlightList[w]
+        let next = highGames.description
+        document.getElementById("txtArea").value = next
+        w++
+    } else {
+        console.log(
+            'This is the last highlight, press Previous to continue')
+    }
+}
+
+function previousHighlight() {
+    if (highlightList.length === 0) {
+        console.error("No highlights available.")
+        return
+    }
+
+    if (w > 0) {
+        w--
+        let highGames = highlightList[w]
+        let next = highGames.description
+        document.getElementById("txtArea").value = next
+    } else {
+        console.log(
+            'This is the first highlight, press Next to continue')
+    }
+}
+
+function nextGameDate() {
+    if (gamesList.length === 0) {
+        console.error("No games available.")
+        return
+    }
+
+            if (i < gamesList.length - 1) {// Corrected condition
+                                            i++
+                                            let lastGame = gamesList[i]
+                                            let homeTeam = lastGame.teams.home.team.name
+                                            let awayTeam = lastGame.teams.away.team.name
+                                            document.getElementById(
+                                               "txtBox1").value = homeTeam
+                                            document.getElementById(
+                                               "txtBox2").value = awayTeam
+
+                                            // Get highlights for the new game
+                                            let gamePk = gamesList[i].gamePk
+                                            let gameURL = "https://statsapi.mlb.com/api/v1/game/[gamePk]/content"
+                                            gameURL = gameURL.replace(
+                                               "[gamePk]", gamePk)
+                                            getGames(gamePk, gameURL)
+                                            } else {
+                console.log(
+                    'This is the last game, press Previous to continue')
+    }
+}
+
+function previousGameDate() {
+    if (gamesList.length === 0) {
+        console.error("No games available.")
+        return
+    }
+
+    if (i > 0) {
+        i--
+        let lastGame = gamesList[i]
+        let homeTeam = lastGame.teams.home.team.name
+        let awayTeam = lastGame.teams.away.team.name
+        document.getElementById("txtBox1").value = homeTeam
+        document.getElementById("txtBox2").value = awayTeam
+
+        // Get highlights for the new game
+        let gamePk = gamesList[i].gamePk
+        let gameURL = "https://statsapi.mlb.com/api/v1/game/[gamePk]/content"
+        gameURL = gameURL.replace("[gamePk]", gamePk)
+        getGames(gamePk, gameURL)
+    } else {
+        console.log('This is the first game, press Next to continue')
+    }
+}
+
+function getGames(gamePk, gameURL) {
+    var requestGame = new XMLHttpRequest()
+
+    requestGame.onload = function() {
+        if (requestGame.status === ISOK) {
+            var jsObject_1 = JSON.parse(requestGame.responseText)
+            highlightList = jsObject_1.highlights.highlights.items
+            // Store highlights
+            w = 0
+            // Reset highlight index
+            if (highlightList && highlightList.length > 0) {
+                document.getElementById(
+                    "txtArea").value = highlightList[0].description
+            } else {
+                document.getElementById(
+                    "txtArea").value = "No Highlights Available"
+            }
+        }
+    }
+    requestGame.open("GET", gameURL, true)
+    requestGame.send()
+}
+
+function getDataAsynch() {
+    const dateControl = document.getElementById("start").value
+    var seasonURL = `https: // statsapi.mlb.com/api/v1/schedule/games/?sportId = 1 & startDate = ${dateControl} & endDate = ${dateControl}`
+
+    request.onload = function() {
+        if (request.status === ISOK) {
+            var jsObject = JSON.parse(request.responseText)
+            gamesList = jsObject.dates[0].games
+
+            if (gamesList && gamesList.length > 0) {
+                var homeTeam = gamesList[0].teams.home.team.name
+                var gamePk = gamesList[0].gamePk
+                var awayTeam = gamesList[0].teams.away.team.name
+
+                document.getElementById("txtBox1").value = homeTeam
+                document.getElementById("txtBox2").value = awayTeam
+
+                var gameURL = "https://statsapi.mlb.com/api/v1/game/[gamePk]/content"
+                gameURL = gameURL.replace("[gamePk]", gamePk)
+
+                getGames(gamePk, gameURL)
+            } else {
+                document.getElementById("txtBox1").value = "No Games"
+                document.getElementById("txtBox2").value = "No Games"
+                document.getElementById("txtArea").value = "No Games"
+            }
+
+        }
+    }
+    request.open("GET", seasonURL, true)
+    request.send()
+}
+
+function playHighlight() {
+    // Add your play highlight logic here
+    console.log("Play Highlight Clicked")
+}
+</script >
+</head >
+<body>
+    <label for="start">Insert Date</label>
+    <input type="date" id="start" name="trip-start" value="2023-05-19" min="2020-01-01" max="2025-12-31" />
+    <input type="button" id="btnAsynch" value="Get Baseball Data Asynchronously" onclick="getDataAsynch();" />
+    <br /><br />
+    <label for="start">Home Team </label><input type="text" id="txtBox1" class="TxtBox" style="width:300px" value="" />
+    <br /><br />
+    <label for="start">Away Team </label><input type="text" id="txtBox2" class="TxtBox" style="width:300px" value="" />
+    <br /><br />
+    <label for="start">Click Next Game or Previous Game to Select Switch</label>
+    <br /><br />
+    <input type="button" id="btnntxGameAsynch" value="Next Game" onclick="nextGameDate();" />
+    <input type="button" id="btnntxGameAsynch" value="Previous Game" onclick="previousGameDate();" />
+    <br /><br />
+    <label for="start">Highlights</label>
+    <br /><br />
+    <textarea id="txtArea" name="Txt" rows="5" cols="50"></textarea>
+    <br /><br />
+    <input type="button" id="btnntxHighlight" value="Next" onclick="nextHighlight();" />
+    <input type="button" id="btnprsHighlight" value="Previous" onclick="previousHighlight();" />
+    <input type="button" id="btnplayHighlight" value="Play" onclick="playHighlight();" />
+</body>
+</html>
