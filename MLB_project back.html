@@ -16,6 +16,7 @@
         var i = 0;
         var w = 0;
         var highlightList = []; // Initialize highlightList
+        var gameURL = "https://statsapi.mlb.com/api/v1/game/[gamePk]/content";
 
         var request = new XMLHttpRequest();
 
@@ -36,6 +37,7 @@
                 let highGames = highlightList[w];
                 let next = highGames.description;
                 document.getElementById("txtArea").value = next;
+                //document.getElementById("txtArea2").value = gameURL; 
                 
             } else {
                 console.log('This is the last highlight, press Previous to continue');
@@ -52,13 +54,12 @@
                 w--;
                 let highGames = highlightList[w];
                 let next = highGames.description;
-                document.getElementById("txtArea").value = next;
+              //  document.getElementById("txtArea").value = next;
 
             } else {
-                w--;
                 let highGames = highlightList[i];
                 let next = highGames.description;
-                document.getElementById("txtArea").value = next;
+               // document.getElementById("txtArea").value = next;
 
             }
         }
@@ -80,11 +81,14 @@
 
                 let gamePk = gamesList[i].gamePk;
                 let gameURL = "https://statsapi.mlb.com/api/v1/game/[gamePk]/content";
+                
+                getGames(gamePk, gameURL); 
                 gameURL = gameURL.replace("[gamePk]", gamePk);
-                getGames(gamePk, gameURL);
 
+                getHighlights(gameURL);
                 document.getElementById("txtBox1").value = homeTeam; 
                 document.getElementById("txtBox2").value = awayTeam;
+                document.getElementById("txtArea1").value = gameURL;
 
 
             } else {
@@ -99,7 +103,7 @@
                 return;
             } 
             if (i > 0) {
-                i--
+                i--;
                 let lastGame = gamesList[i]; // Get last game without removing it
                 let homeTeam = lastGame.teams.home.team.name;
                 let awayTeam = lastGame.teams.away.team.name
@@ -107,21 +111,18 @@
                 document.getElementById("txtBox2").value = awayTeam; 
 
                 let gamePk = gamesList[i].gamePk;
-                let gameURL = "https://statsapi.mlb.com/api/v1/game/[gamePk]/content";
-                gameURL = gameURL.replace("[gamePk]", gamePk);
+                gameURL = "https://statsapi.mlb.com/api/v1/game/[gamePk]/content";
                 getGames(gamePk, gameURL);
 
+
+                gameURL = gameURL.replace("[gamePk]", gamePk);
+                
+                getHighlights(gameURL);
+                
                 document.getElementById("txtBox1").value = homeTeam; 
                 document.getElementById("txtBox2").value = awayTeam;
-               
-               
-               // i--
-               // let lastGame = gamesList[i]; // Get last game without removing it
-               // let homeTeam = lastGame.teams.home.team.name;
-                //let awayTeam = lastGame.teams.away.team.name
-               // document.getElementById("txtBox1").value = homeTeam;
-               // document.getElementById("txtBox2").value = awayTeam; 
-
+                document.getElementById("txtArea1").value = gameURL;
+              
             } else {
                 console.log('This is the first game, press Next to continue')
 
@@ -136,9 +137,10 @@
                 if (requestGame.status === ISOK) {
                     var jsObject_1 = JSON.parse(requestGame.responseText);
                     var highlightList = jsObject_1.highlights.highlights.items; // Store highlights
-                    w = 0; // Reset highlight index
-                    if (highlightList && highlightList.length > 0) {
-                      document.getElementById("txtArea").value = highlightList[0].description;
+                    //let w = 0; // Reset highlight index
+                    if (highlightList.length > 0) {
+                      document.getElementById("txtArea").value = highlightList[w].description;
+                      //return highlightList[0].description;
                     } else {
                       document.getElementById("txtArea").value = "No Highlights Available";
                     }
@@ -173,10 +175,10 @@
                     var jsObject_1 = JSON.parse(requestHigh.responseText);
         
                     highlightList = jsObject_1.highlights.highlights.items;
-                    //let highGames = highlightList[0];
-                    //let next = highGames.description;
+                    let highGames = highlightList[0];
+                    let next = highGames.description;
         
-                    //document.getElementById("txtArea").value = next;
+                    document.getElementById("txtArea").value = next;
                 }
             };
             requestHigh.open("GET", gameURL, true);
@@ -208,13 +210,15 @@
                 document.getElementById("txtBox1").value = homeTeam;
                 document.getElementById("txtBox2").value = awayTeam;
 
-                var gameURL = "https://statsapi.mlb.com/api/v1/game/[gamePk]/content";
+                gameURL = "https://statsapi.mlb.com/api/v1/game/[gamePk]/content";
                 
                 gameURL = gameURL.replace("[gamePk]", gamePk);
 
                 getHighlights(gameURL);
 
-                getGames(gamePk, gameURL);
+                let pk = getGames(gamePk, gameURL);
+
+                document.getElementById("txtArea").value = highlightList[i].description;
 
                 var newJSON = JSON.stringify(jsObject);
             }
@@ -229,7 +233,7 @@
 <body>
     <label for="start">Insert Date</label>
     <input type="date" id="start" name="trip-start" value="2023-05-19" min="2020-01-01" max="2025-12-31" />
-    <input type="button" id="btnAsynch" value="Get Baseball Data Asynchronously" onclick="getDataAsynch();" />
+    <input type="button" id="btngetAsynch" value="Get Baseball Data Asynchronously" onclick="getDataAsynch();" />
     <br /><br />
     <label for="start">Home Team  </label><input type="text" id="txtBox1" class="TxtBox" style="width:300px" value="" />
 	<br /><br />
@@ -237,16 +241,18 @@
     <br /><br />
     <label for="start">Click Next Game or Previous Game to Select Switch</label>
     <br /><br />
-    <input type="button" id="btnntxGameAsynch" value="Next Game" onclick="nextGameDate();" />
-    <input type="button" id="btnntxGameAsynch" value="Previous Game" onclick="previousGameDate();" />
+    <input type="button" id="btnprsAsynch" value="Previous Game" onclick="previousGameDate();" />
+    <input type="button" id="btnntxAsynch" value="Next Game" onclick="nextGameDate();" />
     <br /><br />
     <label for="start">Highlights</label>
     <br /><br />
     <textarea id="txtArea" name="Txt" rows="5" cols="50"></textarea>
     <br /><br />
-    <input type="button" id="btnntxHighlight" value="Next" onclick="nextHighlight();" />
-    <input type="button" id="btnprsHighlight" value="Previous" onclick="previousHighlight();" />
-    <input type="button" id="btnplayHighlight" value="Play" onclick="playHighlight();" />
-    
+    <input type="button" id="btnprsHighlight_2" value="Previous" onclick="previousHighlight();" />
+    <input type="button" id="btnntxHighlight_1" value="Next" onclick="nextHighlight();" />
+    <input type="button" id="btnplayHighlight_2" value="Play" onclick="playHighlight();" />
+    <br /><br />
+    <textarea id="txtArea1" name="Txt" rows="5" cols="50"></textarea>
+    <textarea id="txtArea2" name="Txt" rows="5" cols="50"></textarea>
 </body>
 </html>
