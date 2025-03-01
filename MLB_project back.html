@@ -40,7 +40,7 @@
                 //document.getElementById("txtArea2").value = gameURL; 
                 
             } else {
-                console.log('This is the last highlight, press Previous to continue');
+                console.log('This is the Last Highlight, press Previous Highlight to continue');
             }
         }
 
@@ -54,12 +54,10 @@
                 w--;
                 let highGames = highlightList[w];
                 let next = highGames.description;
-              //  document.getElementById("txtArea").value = next;
+                document.getElementById("txtArea").value = next;
 
             } else {
-                let highGames = highlightList[i];
-                let next = highGames.description;
-               // document.getElementById("txtArea").value = next;
+                console.log('This is the first highlight, press Next Highlight to continue')
 
             }
         }
@@ -251,8 +249,6 @@
     <input type="button" id="btnprsHighlight_2" value="Previous" onclick="previousHighlight();" />
     <input type="button" id="btnntxHighlight_1" value="Next" onclick="nextHighlight();" />
     <input type="button" id="btnplayHighlight_2" value="Play" onclick="playHighlight();" />
-    <br /><br />
-    <textarea id="txtArea1" name="Txt" rows="5" cols="50"></textarea>
-    <textarea id="txtArea2" name="Txt" rows="5" cols="50"></textarea>
+
 </body>
 </html>
